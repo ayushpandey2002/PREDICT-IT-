@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/style.css">
+  <title>Predict it</title>
+</head>
+
+<body>
+
+
+
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand bg-secondary px-3" href="/">Predict-it</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/#predict">Predict Price</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/list_cars">List your car</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/browse">Browse Cars</a>
+          </li>
+        </ul>
+
+      
+
+        <div class="d-flex">
+          {% if user.is_authenticated %}
+             <button class="btn btn-dark text-white mx-3">
+                    <a class="nav-link text-white p-1" aria-current="page" href="/dashboard">{{request.user.first_name}}</a>
+          </button>
+          <button type="button" class="btn btn-outline-secondary">
+            <a class="text-white text-decoration-none" href="/logout">Logout</a>
+          </button>
+          {% else %}
+          <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#loginModal">
+            Login
+          </button>
+          <button type="button" class="btn btn-outline-warning mx-2" data-bs-toggle="modal"
+            data-bs-target="#SignupModal">
+            SignUp
+          </button>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="display:{{display}}">
+          {{message}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+  <!--Signup Modal -->
+  <div class="modal fade" id="SignupModal" tabindex="-1" aria-labelledby="SignupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="SignupModalLabel">SignUp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" action="/signup" method="POST">
+            {% csrf_token %}
+            <div class="col-md-8">
+              <label for="signup-email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="signup-email" name="signup-email" required>
+            </div>
+            <div class="col-md-8">
+              <label for="signup-username" class="form-label">Enter your name</label>
+              <input type="text" class="form-control" id="signup-username" name="signup-username" required>
+            </div>
+            <div class="col-md-8">
+              <label for="signup-password" class="form-label">Set a password</label>
+              <input type="password" class="form-control" id="signup-password" name="signup-password" required>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" action="/login" method="POST">
+            {% csrf_token %}
+            <div class="col-md-8">
+              <label for="login-email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="login-email" name="login-email" required>
+            </div>
+            <div class="col-md-8">
+              <label for="login-password" class="form-label">Enter your password</label>
+              <input type="password" class="form-control" id="login-password" name="login-password" required>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+<img src="/static/assets/list-1.jpg" height="400px" width="100%">
+
+  <div class="container my-5">
+    <h3 class="mb-5">List your car with us</h3>
+    {% if user.is_authenticated %}
+    <form class="row g-3" action="/list_cars" method="POST">
+      {% csrf_token %}
+      <button type="button" class="btn btn-dark" disabled>
+        <span class="sr-only">Email : {{request.user.username }}</span>
+      </button>
+      <div class="col-md-6">
+        <label for="list-car_name" class="form-label">Car name</label>
+        <input type="text" class="form-control" id="list-car_name" name="list-car_name" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-price" class="form-label">Price</label>
+        <input type="number" class="form-control" id="list-price" name="list-price" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-km_driven" class="form-label">Kms driven</label>
+        <input type="number" class="form-control" id="list-km_driven" name="list-km_driven" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-owners_count" class="form-label">Total no of owners till today</label>
+        <input type="number" class="form-control" id="list-owners_count" name="list-owners_count" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-year" class="form-label">Year</label>
+        <input type="number" class="form-control" id="list-year" name="list-year" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-fuel_type" class="form-label">Fuel Type</label>
+        <input type="text" class="form-control" id="list-fuel_type" name="list-fuel_type" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-transmission_type" class="form-label">Transmission type</label>
+        <input type="text" class="form-control" id="list-transmission_type" name="list-transmission_type" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-phone_number" class="form-label">Enter you phone number</label>
+        <input type="number" class="form-control" id="list-phone_number" name="list-phone_number" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-seller_name" class="form-label">Name of the seller</label>
+        <input type="text" class="form-control" id="list-seller_name" name="list-seller_name" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-city" class="form-label">Car owner belongs to which city</label>
+        <input type="text" class="form-control" id="list-city" name="list-city" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="list-number_plate" class="form-label">Car number plate number</label>
+        <input type="text" class="form-control" id="list-number_plate" name="list-number_plate" required>
+      </div>
+
+      {% comment %} <div class="col-md-6">
+        <label for="email" class="form-label">Email : </label>
+        <input type="text" class="form-control" id="email" name="email" value={{request.user.username }} disabled>
+      </div> {% endcomment %}
+
+
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">List this car</button>
+      </div>
+    </form>
+    {% else %}
+    Signup or Login to list your car
+    <div class="d-flex my-3">
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#loginModal">
+        Login
+      </button>
+      <button type="button" class="btn btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#SignupModal">
+        SignUp
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
